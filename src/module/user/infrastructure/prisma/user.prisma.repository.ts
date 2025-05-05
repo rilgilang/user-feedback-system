@@ -8,7 +8,7 @@ export class UserPrismaRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<UserEntity[]> {
-    const books = await this.prisma.user.findMany();
+    const books = await this.prisma.postgres.user.findMany();
     return books.map(
       (b) =>
         new UserEntity(
@@ -23,7 +23,7 @@ export class UserPrismaRepository implements UserRepository {
   }
 
   async findById(id: string): Promise<UserEntity | null> {
-    const b = await this.prisma.user.findUnique({ where: { id } });
+    const b = await this.prisma.postgres.user.findUnique({ where: { id } });
     return b
       ? new UserEntity(
           b.id,
