@@ -6,7 +6,7 @@ import { UserController } from './module/user/interface/controller/user.controll
 
 @Module({
   imports: [CommonModule, UserModule, FeedbackModule],
-  controllers: [UserController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
