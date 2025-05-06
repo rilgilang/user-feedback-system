@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { UserPrismaRepository } from '../../infrastructure/prisma/user.prisma.repository';
+import { UserPrismaRepository } from '../../infrastructure/postgres/user.postgres.prisma.repository';
 
 @Controller('user')
 export class UserController {

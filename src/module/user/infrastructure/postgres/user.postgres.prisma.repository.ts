@@ -8,8 +8,8 @@ export class UserPrismaRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<UserEntity[]> {
-    const books = await this.prisma.postgres.user.findMany();
-    return books.map(
+    const user = await this.prisma.postgres.user.findMany();
+    return user.map(
       (b) =>
         new UserEntity(
           b.id,
@@ -35,16 +35,4 @@ export class UserPrismaRepository implements UserRepository {
         )
       : null;
   }
-
-  //   async create(book: Book): Promise<void> {
-  //     await this.prisma.book.create({ data: book });
-  //   }
-
-  //   async update(book: Book): Promise<void> {
-  //     await this.prisma.book.update({ where: { id: book.id }, data: book });
-  //   }
-
-  //   async delete(id: string): Promise<void> {
-  //     await this.prisma.book.delete({ where: { id } });
-  //   }
 }
