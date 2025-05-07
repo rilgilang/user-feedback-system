@@ -11,6 +11,8 @@ import { SubmitFeedbackUseCase } from '../../application/use-cases/submit-feedba
 import { SubmitFeedbackSchema } from '../validator/submit-feedback.schema';
 import { FeedbackEntity } from '../../domain/entities/feedback.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { FeedbackAttachmentEntity } from '../../domain/entities/feedback-attachment.entity';
+import { string } from 'zod';
 
 @Controller('feedback')
 export class FeedbackController {
@@ -27,15 +29,24 @@ export class FeedbackController {
       throw new BadRequestException(parseResult.error.flatten());
     }
 
+    const feedbackId = uuidv4();
+
     this.submitFeedbackUseCase.execute(
       files,
       new FeedbackEntity(
-        uuidv4(),
+        feedbackId,
         '72796b20-1cb8-4ffd-a4c0-3d41d49e7165',
         body.title,
         body.status,
         body.description,
         body.type,
+        new Date(),
+        new Date(),
+      ),
+      new FeedbackAttachmentEntity(
+        uuidv4(),
+        feedbackId,
+        ['kontol', 'lodon'],
         new Date(),
         new Date(),
       ),
