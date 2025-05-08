@@ -2,13 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { FeedbackRepository } from '../../domain/repositories/feedback.repository.interface';
 import { PrismaService } from 'src/common/prisma.service';
 import { FeedbackEntity } from '../../domain/entities/feedback.entity';
+import { take } from 'rxjs';
 
 @Injectable()
 export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<FeedbackEntity[]> {
-    const feedbacks = await this.prisma.postgres.feedback.findMany();
+  async findAll(
+    sort: string,
+    filter: string,
+    q: string,
+    type: string,
+    page: number,
+    per_page: number,
+  ): Promise<FeedbackEntity[]> {
+    const where: any = {};
+
+    if (filter) {
+      switch (filter) {
+        case 'status':
+          where[filter] = q.toUpperCase();
+      }
+    }
+
+    if (type) {
+      where['type'] = type.toUpperCase();
+    }
+
+    console.info('where', where);
+
+    const feedbacks = await this.prisma.postgres.feedback.findMany({
+      where,
+      // orderBy: { createdAt: sort != '' ? sort : 'desc' },
+      take: per_page,
+      skip: (page - 1) * per_page,
+    });
+
     return feedbacks.map(
       (b) =>
         new FeedbackEntity(

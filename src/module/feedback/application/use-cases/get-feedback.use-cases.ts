@@ -14,17 +14,32 @@ export class GetFeedbackUseCase {
     private readonly feedbackAttachmentRepository: FeedbackAttachmentsMongoRepository,
   ) {}
 
-  async execute(): Promise<FeedbackEntityWithAttachment[]> {
-    const feedbacks = await this.feedbackRepository.findAll();
+  async execute(
+    sort: string,
+    filter: string,
+    q: string,
+    type: string,
+    page: number,
+    per_page: number,
+  ): Promise<FeedbackEntityWithAttachment[]> {
+    const feedbacks = await this.feedbackRepository.findAll(
+      sort,
+      filter,
+      q,
+      type,
+      page,
+      per_page,
+    );
 
     const result = await Promise.all(
       feedbacks.map(async (feedback) => {
+        feedback.status = feedback.status.toLowerCase();
+        feedback.type = feedback.type.toLowerCase();
+
         const attachments = await this.feedbackAttachmentRepository.findById(
           feedback.id,
         );
 
-        console.info('feedbackId --< ', feedback.id);
-        console.info('attachment --< ', attachments);
         return {
           ...feedback,
           attachment: attachments?.attachment_link ?? [],
