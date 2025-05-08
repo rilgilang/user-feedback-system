@@ -9,9 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     CommonModule,
     UserModule,
     FeedbackModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://ini_user:2Qt5OClDLLcHQ5OI@cluster0.r8vyb.mongodb.net/user-feedback?retryWrites=true&w=majority&appName=Cluster0',
-    ),
+    MongooseModule.forRoot('asdada'),
   ],
   controllers: [],
   providers: [],
