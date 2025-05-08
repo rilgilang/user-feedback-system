@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -13,10 +14,14 @@ import { FeedbackEntity } from '../../domain/entities/feedback.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { FeedbackAttachmentEntity } from '../../domain/entities/feedback-attachment.entity';
 import { string } from 'zod';
+import { GetFeedbackUseCase } from '../../application/use-cases/get-feedback.use-cases';
 
 @Controller('feedback')
 export class FeedbackController {
-  constructor(private readonly submitFeedbackUseCase: SubmitFeedbackUseCase) {}
+  constructor(
+    private readonly submitFeedbackUseCase: SubmitFeedbackUseCase,
+    private readonly getFeedbackUseCase: GetFeedbackUseCase,
+  ) {}
 
   @Post('submit')
   @UseInterceptors(FilesInterceptor('file'))
@@ -55,5 +60,11 @@ export class FeedbackController {
       filename1: files[0].filename,
       filename2: files[1].filename,
     };
+  }
+
+  @Get('')
+  async getAllFeedback() {
+    const feedback = await this.getFeedbackUseCase.execute();
+    return feedback;
   }
 }

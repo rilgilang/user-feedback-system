@@ -30,7 +30,7 @@ export class FeedbackAttachmentsMongoRepository
 
   async findById(id: string): Promise<FeedbackAttachmentEntity | null> {
     const b = await this.feedbackAttachment.findOne({
-      where: { id },
+      feedback_id: id,
     });
     return b
       ? new FeedbackAttachmentEntity(

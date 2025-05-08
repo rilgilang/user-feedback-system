@@ -9,6 +9,7 @@ import {
   FeedbackAttachmentSchema,
 } from '../schemas/feedback-attachments.schema';
 import { FeedbackAttachmentsMongoRepository } from './infrastructure/mongo/feedback-attachments.mongo.prisma.repository';
+import { GetFeedbackUseCase } from './application/use-cases/get-feedback.use-cases';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FeedbackAttachmentsMongoRepository } from './infrastructure/mongo/feedb
   controllers: [FeedbackController],
   providers: [
     SubmitFeedbackUseCase,
+    GetFeedbackUseCase,
     SubmitFeedbackService,
     FeedbackPostgresPrismaRepository,
     FeedbackAttachmentsMongoRepository,

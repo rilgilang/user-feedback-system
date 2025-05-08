@@ -1,3 +1,5 @@
+import { FeedbackAttachmentEntity } from './feedback-attachment.entity';
+
 export class FeedbackEntity {
   constructor(
     public readonly id: string,
@@ -9,4 +11,16 @@ export class FeedbackEntity {
     public createdAt: Date,
     public updatedAt: Date,
   ) {}
+}
+
+export interface FeedbackEntityWithAttachment extends FeedbackEntity {
+  id: string;
+  userId: string;
+  title: string;
+  status: string;
+  description: string;
+  type: string;
+  createdAt: Date;
+  updatedAt: Date;
+  attachment: String[];
 }
