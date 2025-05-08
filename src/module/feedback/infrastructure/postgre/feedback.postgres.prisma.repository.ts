@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { FeedbackRepository } from '../../domain/repositories/feedback.repository.interface';
 import { PrismaService } from 'src/common/prisma.service';
 import { FeedbackEntity } from '../../domain/entities/feedback.entity';
-import { take } from 'rxjs';
 
 @Injectable()
 export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
@@ -31,9 +30,19 @@ export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
 
     console.info('where', where);
 
+    const orderDirection: 'asc' | 'desc' =
+      sort === 'asc' || sort === 'desc' ? sort : 'desc';
+
+    console.info('order direction ', orderDirection);
+
+    const feedbackCount = await this.prisma.postgres.feedback.count({
+      where,
+      orderBy: { created_at: orderDirection },
+    });
+
     const feedbacks = await this.prisma.postgres.feedback.findMany({
       where,
-      // orderBy: { createdAt: sort != '' ? sort : 'desc' },
+      orderBy: { created_at: orderDirection },
       take: per_page,
       skip: (page - 1) * per_page,
     });
@@ -51,6 +60,41 @@ export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
           b.updated_at,
         ),
     );
+  }
+
+  async findAllCount(
+    sort: string,
+    filter: string,
+    q: string,
+    type: string,
+  ): Promise<number> {
+    const where: any = {};
+
+    if (filter) {
+      switch (filter) {
+        case 'status':
+          where[filter] = q.toUpperCase();
+      }
+    }
+
+    if (type) {
+      where['type'] = type.toUpperCase();
+    }
+
+    console.info('count');
+    console.info('where', where);
+
+    const orderDirection: 'asc' | 'desc' =
+      sort === 'asc' || sort === 'desc' ? sort : 'desc';
+
+    console.info('order direction ', orderDirection);
+
+    const feedbackCount = await this.prisma.postgres.feedback.findMany({
+      where,
+      orderBy: { created_at: orderDirection },
+    });
+
+    return feedbackCount.length;
   }
 
   async findById(id: string): Promise<FeedbackEntity | null> {

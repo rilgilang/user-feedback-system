@@ -15,7 +15,6 @@ import { SubmitFeedbackSchema } from '../validator/submit-feedback.schema';
 import { FeedbackEntity } from '../../domain/entities/feedback.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { FeedbackAttachmentEntity } from '../../domain/entities/feedback-attachment.entity';
-import { number, string } from 'zod';
 import { GetFeedbackUseCase } from '../../application/use-cases/get-feedback.use-cases';
 import { QueryGetFeedbackSchema } from '../validator/get-feedback.schema.validation';
 
@@ -54,7 +53,7 @@ export class FeedbackController {
       new FeedbackAttachmentEntity(
         uuidv4(),
         feedbackId,
-        ['kontol', 'lodon'],
+        ['', 'lodon'],
         new Date(),
         new Date(),
       ),
@@ -80,8 +79,8 @@ export class FeedbackController {
       filter ? filter : '',
       q ? q : '',
       type ? type : 'bug_report',
-      page ? page : 1,
-      per_page ? per_page : 10,
+      page ? Number(page) : 1,
+      per_page ? Number(per_page) : 10,
     );
     return feedback;
   }

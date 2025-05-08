@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import {
-  FeedbackEntity,
-  FeedbackEntityWithAttachment,
-} from '../../domain/entities/feedback.entity';
-import { FeedbackAttachmentEntity } from '../../domain/entities/feedback-attachment.entity';
 import { FeedbackPostgresPrismaRepository } from '../../infrastructure/postgre/feedback.postgres.prisma.repository';
 import { FeedbackAttachmentsMongoRepository } from '../../infrastructure/mongo/feedback-attachments.mongo.prisma.repository';
+import { FeedbacksDto } from '../dto/paginated-feedbacks.dto';
 
 @Injectable()
 export class GetFeedbackUseCase {
@@ -21,7 +17,7 @@ export class GetFeedbackUseCase {
     type: string,
     page: number,
     per_page: number,
-  ): Promise<FeedbackEntityWithAttachment[]> {
+  ): Promise<FeedbacksDto> {
     const feedbacks = await this.feedbackRepository.findAll(
       sort,
       filter,
@@ -47,6 +43,13 @@ export class GetFeedbackUseCase {
       }),
     );
 
-    return result;
+    const countFeedback = await this.feedbackRepository.findAllCount(
+      sort,
+      filter,
+      q,
+      type,
+    );
+
+    return new FeedbacksDto(result, countFeedback, page, per_page);
   }
 }

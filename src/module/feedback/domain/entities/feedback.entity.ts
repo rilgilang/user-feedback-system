@@ -12,15 +12,3 @@ export class FeedbackEntity {
     public updatedAt: Date,
   ) {}
 }
-
-export interface FeedbackEntityWithAttachment extends FeedbackEntity {
-  id: string;
-  userId: string;
-  title: string;
-  status: string;
-  description: string;
-  type: string;
-  createdAt: Date;
-  updatedAt: Date;
-  attachment: String[];
-}

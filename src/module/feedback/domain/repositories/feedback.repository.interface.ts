@@ -1,6 +1,12 @@
 import { FeedbackEntity } from '../entities/feedback.entity';
 
 export interface FeedbackRepository {
+  findAllCount(
+    sort: string,
+    filter: string,
+    q: string,
+    type: string,
+  ): Promise<number>;
   findAll(
     sort: string,
     filter: string,
