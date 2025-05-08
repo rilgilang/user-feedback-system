@@ -3,12 +3,13 @@ import { FeedbackPostgresPrismaRepository } from '../../infrastructure/postgre/f
 import { FeedbackEntity } from '../entities/feedback.entity';
 import { FeedbackAttachmentEntity } from '../entities/feedback-attachment.entity';
 import { FeedbackAttachmentsRepository } from '../repositories/feedback-attachments.repository.interface';
+import { FeedbackAttachmentsMongoRepository } from '../../infrastructure/mongo/feedback-attachments.mongo.prisma.repository';
 
 @Injectable()
 export class SubmitFeedbackService {
   constructor(
     private readonly feedbackRepository: FeedbackPostgresPrismaRepository,
-    private readonly feedbackAttachmentRepository: FeedbackAttachmentsRepository,
+    private readonly feedbackAttachmentRepository: FeedbackAttachmentsMongoRepository,
   ) {}
   upload(
     file: Express.Multer.File[],
@@ -17,9 +18,8 @@ export class SubmitFeedbackService {
   ) {
     this.feedbackRepository.create(feedback);
     this.feedbackAttachmentRepository.create(attachments);
-    console.info('blog goblok --> ');
-    const att = this.feedbackAttachmentRepository.findAll();
-    console.info('attachments --> ', att);
+    // const att = this.feedbackAttachmentRepository.findAll();
+    // console.info('attachments --> ', att);
     return 'uploaded-url-or-result';
   }
 }

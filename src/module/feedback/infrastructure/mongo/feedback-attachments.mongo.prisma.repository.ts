@@ -1,25 +1,21 @@
-import { Inject, Injectable, Provider } from '@nestjs/common';
-import { PrismaService } from 'src/common/prisma.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeedbackAttachmentsRepository } from '../../domain/repositories/feedback-attachments.repository.interface';
 import { FeedbackAttachmentEntity } from '../../domain/entities/feedback-attachment.entity';
-import { Db, MongoClient } from 'mongodb';
+import { Model } from 'mongoose';
+import { FeedbackAttachment } from 'src/module/schemas/feedback-attachments.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class FeedbackAttachmentsMongoRepository
   implements FeedbackAttachmentsRepository
 {
   constructor(
-    @Inject('MONGO_CLIENT') private mongoClient: MongoClient,
-    private readonly Db: Db,
-  ) {
-    this.mongoClient.db('user-feedback');
-  }
+    @InjectModel(FeedbackAttachment.name)
+    private feedbackAttachment: Model<FeedbackAttachment>,
+  ) {}
 
   async findAll(): Promise<FeedbackAttachmentEntity[]> {
-    const feedbacks = await this.Db.collection('feedback_attachment')
-      .find()
-      .toArray();
-
+    const feedbacks = await this.feedbackAttachment.find();
     return feedbacks.map(
       (b) =>
         new FeedbackAttachmentEntity(
@@ -33,7 +29,7 @@ export class FeedbackAttachmentsMongoRepository
   }
 
   async findById(id: string): Promise<FeedbackAttachmentEntity | null> {
-    const b = await this.Db.collection('feedback_attachment').findOne({
+    const b = await this.feedbackAttachment.findOne({
       where: { id },
     });
     return b
@@ -48,21 +44,7 @@ export class FeedbackAttachmentsMongoRepository
   }
 
   async create(attachment: FeedbackAttachmentEntity): Promise<null> {
-    // await this.prisma.mongo.feedbackAttachment.create({
-    //   data: {
-    //     feedback_id: attachment.feedback_id,
-    //     attachment_link: attachment.attachment_link,
-    //     created_at: attachment.createdAt,
-    //     updated_at: attachment.updatedAt,
-    //   },
-    // });
-
-    await this.Db.collection('feedback_attachment').insertOne({
-      feedback_id: '123',
-      attachment_link: ['https://example.com/file.jpg'],
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+    await this.feedbackAttachment.create(attachment);
 
     return null;
   }
