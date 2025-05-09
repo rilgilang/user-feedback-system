@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { FeedbackPostgresPrismaRepository } from '../../infrastructure/postgre/feedback.postgres.prisma.repository';
 import { FeedbackAttachmentsMongoRepository } from '../../infrastructure/mongo/feedback-attachments.mongo.prisma.repository';
 import { FeedbacksDto } from '../dto/paginated-feedbacks.dto';
 
-@Injectable()
 export class GetFeedbackUseCase {
   constructor(
     private readonly feedbackRepository: FeedbackPostgresPrismaRepository,
@@ -18,7 +16,7 @@ export class GetFeedbackUseCase {
     page: number,
     per_page: number,
   ): Promise<FeedbacksDto> {
-    const feedbacks = await this.feedbackRepository.findAll(
+    const feedbacks = await this.feedbackRepository.findAllWithQuery(
       sort,
       filter,
       q,

@@ -10,6 +10,10 @@ import {
 } from '../schemas/feedback-attachments.schema';
 import { FeedbackAttachmentsMongoRepository } from './infrastructure/mongo/feedback-attachments.mongo.prisma.repository';
 import { GetFeedbackUseCase } from './application/use-cases/get-feedback.use-cases';
+import { SendFeedbackReminderUseCase } from './application/use-cases/send-feedback-reminder.use-cases';
+import { RabbitMQAdapter } from 'src/infrastructure/message-broker/rabbitmq.adapter';
+import { MESSAGE_BROKER_PORT } from 'src/port/message-broker.port';
+import { UserPrismaRepository } from '../user/infrastructure/postgres/user.postgres.prisma.repository';
 
 @Module({
   imports: [
@@ -24,7 +28,22 @@ import { GetFeedbackUseCase } from './application/use-cases/get-feedback.use-cas
     SubmitFeedbackService,
     FeedbackPostgresPrismaRepository,
     FeedbackAttachmentsMongoRepository,
+    UserPrismaRepository,
+    {
+      provide: MESSAGE_BROKER_PORT,
+      useClass: RabbitMQAdapter,
+    },
+    {
+      provide: SendFeedbackReminderUseCase,
+      useFactory: (broker: RabbitMQAdapter) =>
+        new SendFeedbackReminderUseCase(
+          FeedbackPostgresPrismaRepository,
+          UserPrismaRepository,
+          broker,
+        ),
+      inject: [MESSAGE_BROKER_PORT],
+    },
   ],
-  exports: [FeedbackPostgresPrismaRepository],
+  exports: [FeedbackPostgresPrismaRepository, SendFeedbackReminderUseCase],
 })
 export class FeedbackModule {}

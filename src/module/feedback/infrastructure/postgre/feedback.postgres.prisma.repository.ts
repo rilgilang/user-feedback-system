@@ -7,7 +7,25 @@ import { FeedbackEntity } from '../../domain/entities/feedback.entity';
 export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(
+  async findAll(): Promise<FeedbackEntity[]> {
+    const feedbacks = await this.prisma.postgres.feedback.findMany();
+
+    return feedbacks.map(
+      (b) =>
+        new FeedbackEntity(
+          b.id,
+          b.user_id,
+          b.title,
+          b.status,
+          b.description,
+          b.type,
+          b.created_at,
+          b.updated_at,
+        ),
+    );
+  }
+
+  async findAllWithQuery(
     sort: string,
     filter: string,
     q: string,
@@ -32,13 +50,6 @@ export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
 
     const orderDirection: 'asc' | 'desc' =
       sort === 'asc' || sort === 'desc' ? sort : 'desc';
-
-    console.info('order direction ', orderDirection);
-
-    const feedbackCount = await this.prisma.postgres.feedback.count({
-      where,
-      orderBy: { created_at: orderDirection },
-    });
 
     const feedbacks = await this.prisma.postgres.feedback.findMany({
       where,
@@ -80,9 +91,6 @@ export class FeedbackPostgresPrismaRepository implements FeedbackRepository {
     if (type) {
       where['type'] = type.toUpperCase();
     }
-
-    console.info('count');
-    console.info('where', where);
 
     const orderDirection: 'asc' | 'desc' =
       sort === 'asc' || sort === 'desc' ? sort : 'desc';
